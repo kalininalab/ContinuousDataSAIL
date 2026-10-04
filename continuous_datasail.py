@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib
-matplotlib.use("Agg")  # headless cluster nodes have no $DISPLAY; force a non-interactive backend
+matplotlib.use("Agg")  
 import matplotlib.pyplot as plt
 import pandas as pd
 import networkx as nx
@@ -382,11 +382,8 @@ def continuous_split_1D(
     ranking_method: str = "leakage",
     ranking_seed: Optional[int] = None,
     cache_path: Optional[Path] = None,
-    k_method: str = "leakage",   # "leakage" (exact, binary search) or "linear" (fast approximation)
-    dataset=None,   # pre-built similarity dataset; skips build_similarity_dataset entirely.
-                    # Lets a caller running several variants back-to-back in ONE process share
-                    # one matrix in memory instead of pickling it to disk -- the pickle is
-                    # n^2 * 8 bytes and blows the 25GB scratch quota for hiv/muv/qm9.
+    k_method: str = "leakage", 
+    dataset=None,
 ) -> pd.DataFrame:
 
     from datasail.report import save_t_sne
@@ -435,9 +432,6 @@ def continuous_split_1D(
         interp_names, interp_metric, interp_weights = names, metric, weights
         interp_label_start, interp_label_end = label_start, label_end
 
-    # --- Restore-dropped-rows guard: whatever entities disappear during dataset
-    # construction (e.g. duplicate-molecule collapsing), map them back onto a
-    # surviving structural duplicate so no input row is silently lost downstream.
     dropped_ids = set(points) - set(names)
     restore_map = {}
     if dropped_ids:
@@ -490,12 +484,12 @@ def continuous_split_1D(
 
         entity_split = {n: result.split[cluster_map[n]] for n in names}
 
-        # backfill entities that were dropped from the dataset
+        
         for did in dropped_ids:
             if did in restore_map:
                 entity_split[did] = entity_split[restore_map[did]]
             else:
-                entity_split[did] = label_start[did]  # last-resort fallback: keep original fold
+                entity_split[did] = label_start[did]  
                 
         pct_dir = out_dir / f"pct_{pct}"
         pct_dir.mkdir(parents=True, exist_ok=True)
@@ -649,12 +643,9 @@ def continuous_split_2D(
     all_rows = frames["f_start"].drop_duplicates(subset=[e_id_col, f_id_col]).reset_index(drop=True)
     print(f"  {len(all_rows)} interactions, identical across all four splits")
  
-    # w(u) = number of interactions u takes part in -- makes Eq. (1) range over
-    # interactions, which is what the paper's D is.
     e_weights = all_rows[e_id_col].value_counts().to_dict()
     f_weights = all_rows[f_id_col].value_counts().to_dict()
  
-    # ---------------------------------------------------------------- entity labels
     e_start_points, e_start_label = load_fold_labels_2d(e_start_dir, e_id_col, e_value_col, folds)
     e_end_points, e_end_label = load_fold_labels_2d(e_end_dir, e_id_col, e_value_col, folds)
     f_start_points, f_start_label = load_fold_labels_2d(f_start_dir, f_id_col, f_value_col, folds)
@@ -676,8 +667,6 @@ def continuous_split_2D(
     f_start_label = {k: v for k, v in f_start_label.items() if k in f_common}
     f_end_label = {k: v for k, v in f_end_label.items() if k in f_common}
  
-    # ---------------------------------------------------------------- axis projections
-    # NOTE: distinct names -- these must not clobber the four input directories.
     tmp_root = Path(tempfile.mkdtemp(prefix="axis_projection_"))
     e_start_proj, e_end_proj = tmp_root / "e_start", tmp_root / "e_end"
     f_start_proj, f_end_proj = tmp_root / "f_start", tmp_root / "f_end"
