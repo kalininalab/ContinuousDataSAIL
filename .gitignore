@@ -1,0 +1,5 @@
+leaks*.pkl
+*.ipynb
+.vscode/
+sider_*/
+*.csv
