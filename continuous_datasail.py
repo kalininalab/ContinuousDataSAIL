@@ -802,7 +802,7 @@ if __name__ == "__main__":
         datatype="M",
         id_col="ID",
         value_col="smiles",
-        percentages=[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+        percentages=list(range(0, 101, 10)),
         similarity="ecfp",
         folds=None,
         plots=True,
