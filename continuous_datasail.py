@@ -276,21 +276,17 @@ def plot_leakage_curve(start_split, end_split, ranked_operations, names, metric,
     L_start = leakage(start_split, names, metric, weights)
     L_end = leakage(end_split, names, metric, weights)
 
-    plt.figure(figsize=(8, 5))
-    plt.plot(ks, leakages, "-", lw=1.5)
-    plt.axhline(L_start, color='#e34948', lw=1.5, ls='--', label='L(start_split)')
-    plt.axhline(L_end, color='#1baf7a', lw=1.5, ls='--', label='L(end_split)')
-    plt.xlabel("k (number of ranked operations applied)")
-    plt.ylabel("Leakage")
-    plt.title("Leakage vs. number of applied cycle operations")
-    plt.tight_layout()
-    plt.savefig(out_path)
-    plt.show()
-    # import pickle
-    # with open("leaks2.pkl", "wb") as f:
-    #     print("saving leaks")
-    #     pickle.dump(leakages, f)
-    return ks, leakages
+    fig, ax = plt.subplots(figsize=(8, 5))
+    ax.plot(ks, leakages, "-", lw=1.5)
+    ax.axhline(L_start, color="#e34948", lw=1.5, ls="--", label="L(start_split)")
+    ax.axhline(L_end, color="#1baf7a", lw=1.5, ls="--", label="L(end_split)")
+    ax.set_xlabel("k (number of ranked operations applied)")
+    ax.set_ylabel("Leakage")
+    ax.set_title("Leakage vs. number of applied cycle operations")
+    ax.legend()
+    fig.tight_layout()
+    fig.savefig(out_path)
+    plt.close(fig)
 
 def cluster_precomputed_matrix(
         names: List[str],
