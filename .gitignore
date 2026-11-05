@@ -3,3 +3,6 @@ leaks*.pkl
 .vscode/
 sider_*/
 *.csv
+
+__pycache__/
+*.pyc
