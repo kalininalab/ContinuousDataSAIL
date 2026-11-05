@@ -773,3 +773,45 @@ def continuous_split_2D(
     results_df = pd.DataFrame(results)
     results_df.to_csv(out_dir / "leakage_summary_2d_via_axes.csv", index=False)
     return results_df
+
+
+if __name__ == "__main__":
+    # import pandas as pd
+    # import numpy as np
+    # from pathlib import Path
+
+    # df = pd.read_csv("sider.csv")
+    # df["random"] = np.random.choice(["train", "val", "test"], p=[0.8, 0.1, 0.1], size=len(df))
+    # df["ID"] = [f"D{i:04d}" for i in range(len(df))]
+
+    # sr = Path("sider_random")
+    # sr.mkdir(parents=True, exist_ok=True)
+    # sd = Path("sider_datasail")
+    # sd.mkdir(parents=True, exist_ok=True)
+    # for col, p in [("random", sr), ("datasail", sd)]:
+    #     for split in ["train", "val", "test"]:
+    #         tmp = df[df[col] == split][["ID", "smiles", col]]
+    #         print(col, split, tmp.shape)
+    #         tmp.rename(columns={col: "split"}, inplace=True)
+    #         tmp.to_csv(p / (split + ".csv"), index=False)
+
+    continuous_split_1D(
+        start_dir=Path("sider_datasail"),
+        end_dir=Path("sider_random"),
+        out_dir=Path("sider_steps"),
+        datatype="M",
+        id_col="ID",
+        value_col="smiles",
+        percentages=list(range(0, 101, 10)),
+        similarity="ecfp",
+        folds=None,
+        plots=True,
+        curve=True,
+        weights=None,
+        num_clusters=None,
+        ranking_method="leakage",
+        ranking_seed=None,
+        cache_path=None,
+        k_method="leakage", 
+        dataset=None
+    )
